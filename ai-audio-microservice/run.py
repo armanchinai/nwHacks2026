@@ -14,11 +14,10 @@ PORT = os.getenv('PORT', 8000)
 
 
 # CREATE APP
-app, db = create_app()
+app = create_app()
 
 
 # MAIN
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
         app.run(port=PORT, debug=True)

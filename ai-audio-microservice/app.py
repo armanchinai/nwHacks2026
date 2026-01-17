@@ -5,8 +5,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-# from db_config import db, configure_db
-# from session_config import configure_sessions
 from dotenv import load_dotenv
 import os
 
@@ -28,18 +26,12 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": CLIENT_URL, "allow_headers": ["Content-Type"]}}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": CLIENT_URL, "allow_headers": ["Content-Type"]}})
 
     # SERVICES CONFIGURATION
     #
     #
     #
-
-    # DATABASE CONFIGURATION
-    # configure_db(app)
-
-    # SESSION CONFIGURATION
-    # configure_sessions(app, db)
 
     
     # ROUTES
@@ -65,4 +57,4 @@ def create_app():
             
     # REGISTER BLUEPRINTS
 
-    return app, None #db
+    return app
