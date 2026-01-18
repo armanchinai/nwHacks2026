@@ -15,7 +15,7 @@ const JOB_TIMEOUT_MS = 60_000;
 const FLY_APP = "nwhacks-runner";
 const FLY_API = "https://api.machines.dev/v1";
 const FLY_TOKEN = process.env.FLY_API_TOKEN;
-const MACHINE_IMAGE = "registry.fly.io/nwhacks-runner:latest";
+const MACHINE_IMAGE = "registry.fly.io/nwhacks-runner:python-two-sum";
 
 /* ------------------ APP SETUP ------------------ */
 
@@ -164,6 +164,7 @@ async function runJob(jobId, problemId, language, code, submit) {
             const passed = exitCode === 0;
 
             console.log(passed ? "all tests passing" : "not passing")
+            console.log(machine)
 
             send(jobId, {
                 type: "result",
