@@ -131,6 +131,9 @@ def grade_code(code_snippet, problem_description):
     output_text = response.json()["output"][0]["content"][0]["text"]
     return output_text
 
+def grade_submission(audio_file, code_snippet, problem_description):
+    pass
+
 
 # MAIN
 if __name__ == "__main__":

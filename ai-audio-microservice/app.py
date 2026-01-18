@@ -8,7 +8,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
-from pipeline import audio_to_transcript, transcript_to_grade
+from pipeline import grade_submission
 
 
 # CONSTANTS
@@ -50,13 +50,14 @@ def create_app():
         audio_file = request.files['file']
 
         problem_description = request.form.get("problem_description")
+        code_snippet = request.form.get("code_snippet")
+        if not code_snippet:
+            return {"error": "Missing code_snippet"}, 400
         if not problem_description:
             return {"error": "Missing problem_description"}, 400
         
-        transcript = audio_to_transcript(audio_file)
-        # response = transcript_to_grade(transcript, problem_description)
-
-        return jsonify({"message": transcript}), 200
+        response = grade_submission(audio_file, code_snippet, problem_description)
+        return jsonify({"message": response}), 200
         
         
         
