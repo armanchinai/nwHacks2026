@@ -118,6 +118,7 @@ async function getFlyMachine(machineId) {
 app.post("/run/:problemId", async (req, res) => {
     const submit = req.query.submit === "true";
     const { language, code } = req.body;
+    const { problemId } = req.params;
 
     if (!language || !code || code.length > MAX_CODE_SIZE) {
         return res.status(400).json({ error: "Invalid input" });
@@ -126,7 +127,7 @@ app.post("/run/:problemId", async (req, res) => {
     const jobId = uuidv4();
     res.json({ job_id: jobId });
 
-    runJob(jobId, req.params.problemId, language, code, submit)
+    runJob(jobId, problemId, language, code, submit)
         .catch(err => {
             console.error(err);
             send(jobId, { type: "error", message: "internal error" });
@@ -155,7 +156,7 @@ async function runJob(jobId, problemId, language, code, submit) {
         PROBLEM_ID: problemId,
         LANGUAGE: language,
         MODE: submit ? "submit" : "test"
-    });
+    }, problemId);
 
     const start = Date.now();
 
