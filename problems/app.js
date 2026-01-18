@@ -3,6 +3,10 @@ import { WebSocketServer } from "ws";
 import { v4 as uuidv4 } from "uuid";
 import http from "http";
 import fetch from "node-fetch";
+import cors from "cors";
+
+
+
 
 /* ------------------ CONFIG ------------------ */
 
@@ -21,6 +25,18 @@ const MACHINE_IMAGE_BASE = "registry.fly.io/nwhacks-runner:";
 /* ------------------ APP SETUP ------------------ */
 
 const app = express();
+
+app.use(cors({
+    origin: [
+        "http://localhost:5173",      // dev frontend (Vite)
+        "http://localhost:3000",      // same-origin if needed
+        "https://speakcode.fly.dev"      // prod frontend
+    ],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
+
 app.use(express.json({ limit: "200kb" }));
 
 const server = http.createServer(app);
