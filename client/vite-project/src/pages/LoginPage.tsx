@@ -1,10 +1,10 @@
-import React from "react";
+// import React from "react";
 import { Link, useNavigate } from "react-router";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
     navigate("/practice");
   };

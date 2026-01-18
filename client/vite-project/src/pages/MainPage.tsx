@@ -91,7 +91,7 @@ export default function MainPage() {
     try {
       // Note: Backend uses req.params.problemId and req.body for language/code
       const res = await fetch(
-        `https://problems.fly.dev/run/${activeProblemId}`,
+        `https://<problems-service-url>/run/${activeProblemId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -102,7 +102,7 @@ export default function MainPage() {
       const { job_id } = await res.json();
 
       // Connect to WebSocket for real-time status
-      const ws = new WebSocket(`wss://problems.fly.dev?job_id=${job_id}`);
+      const ws = new WebSocket(`wss://<problem-service-url>?job_id=${job_id}`);
       wsRef.current = ws;
 
       ws.onmessage = (ev) => {

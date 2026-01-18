@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import { Link } from "react-router-dom";
 
 const SignupPage = () => {
@@ -24,7 +24,7 @@ const SignupPage = () => {
             Login
           </Link>
           <Link
-            to="/practice"
+            to="/practice?problemId=java-two-sum"
             className="px-8 py-4 bg-white text-slate-950 rounded-full font-black text-xs md:text-sm hover:bg-cyan-400 transition-all active:scale-95 shadow-xl shadow-white/5"
           >
             TRY DEMO
