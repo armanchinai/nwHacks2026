@@ -5,5 +5,5 @@ gunicorn
 pydub
 openai==1.0.0
 librosa
-parselmouth
+praat-parselmouth
 numpy

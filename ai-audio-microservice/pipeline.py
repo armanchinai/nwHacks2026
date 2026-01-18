@@ -5,6 +5,7 @@ import json
 import librosa
 import parselmouth
 import numpy as np
+import io
 
 
 # CONSTANTS
@@ -39,7 +40,7 @@ def transcript_to_grade(transcript, problem_description):
     output_text = response.json()["output"][0]["content"][0]["text"]
     return output_text
 
-def audio_to_text(audio_file):
+def audio_to_transcript(audio_file):
     files = {
         "file": (audio_file.name, audio_file, "audio/mpeg")
     }
@@ -56,55 +57,45 @@ def audio_to_text(audio_file):
     return transcript
 
 
-def extract_audio_features(audio_path, transcript_text):
-    y, sr = librosa.load(audio_path, sr=16000)
+def extract_audio_features(audio_file, transcript_text):
+    audio_bytes = audio_file.read()
+    audio_buffer = io.BytesIO(audio_bytes)
 
-    # ----------------------------
-    # 1. Speech Rate (wpm)
-    # ----------------------------
+    y, sr = librosa.load(audio_buffer, sr=16000)
+
+    # Speech Rate
     duration_seconds = librosa.get_duration(y=y, sr=sr)
     word_count = len(transcript_text.split())
     wpm = (word_count / duration_seconds) * 60
 
-    # ----------------------------
-    # 2. Pauses (silence detection)
-    # ----------------------------
-    # Use RMS energy to find silent segments
+    # Pauses
     rms = librosa.feature.rms(y=y)[0]
     frames = range(len(rms))
     times = librosa.frames_to_time(frames, sr=sr)
 
-    # Silence threshold (tweak if needed)
     silence_threshold = np.mean(rms) * 0.3
 
     silent_frames = rms < silence_threshold
     silent_times = times[silent_frames]
 
-    # Pause duration estimate
     pause_duration = len(silent_times) * (times[1] - times[0])
     pause_rate = len(silent_times) / duration_seconds
 
-    # ----------------------------
-    # 3. Pitch (Praat via parselmouth)
-    # ----------------------------
-    snd = parselmouth.Sound(audio_path)
+    # Pitch
+    snd = parselmouth.Sound(y.astype(np.float64), sr)
     pitch = snd.to_pitch()
 
     pitch_values = pitch.selected_array['frequency']
-    pitch_values = pitch_values[pitch_values != 0]  # remove zeros
+    pitch_values = pitch_values[pitch_values != 0]
 
     pitch_mean = float(np.mean(pitch_values))
     pitch_std = float(np.std(pitch_values))
 
-    # ----------------------------
-    # 4. Energy
-    # ----------------------------
+    # Energy
     energy_mean = float(np.mean(rms))
     energy_std = float(np.std(rms))
 
-    # ----------------------------
-    # 5. Filled Pauses
-    # ----------------------------
+    # Filler words
     fillers = ["um", "uh", "like", "you know", "so", "actually"]
     transcript_lower = transcript_text.lower()
 
@@ -125,4 +116,8 @@ def extract_audio_features(audio_path, transcript_text):
 
 # MAIN
 if __name__ == "__main__":
-    pass
+    audio_path = "C:\\Users\\arman\\Downloads\\Leetcode two sum solution explained - coding interviews challenge.mp3"
+    transcript = audio_to_transcript(open(audio_path, "rb"))
+
+    features = extract_audio_features(open(audio_path, "rb"), transcript)
+    print(features)
