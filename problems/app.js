@@ -175,7 +175,7 @@ async function runJob(jobId, problemId, language, code, submit) {
             return;
         }
 
-        console.log(machine)
+        // console.log(machine)
 
 
         if (Date.now() - start > JOB_TIMEOUT_MS) {
