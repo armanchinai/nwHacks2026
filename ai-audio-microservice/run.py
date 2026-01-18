@@ -20,4 +20,4 @@ app = create_app()
 # MAIN
 if __name__ == '__main__':
     with app.app_context():
-        app.run(port=PORT, debug=True)
+        app.run(port=PORT, use_reloader=False)

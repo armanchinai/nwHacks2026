@@ -6,6 +6,7 @@ import librosa
 import parselmouth
 import numpy as np
 import io
+import subprocess
 
 
 # CONSTANTS
@@ -58,6 +59,7 @@ def audio_to_transcript(audio_file):
 
 
 def extract_audio_features(audio_file, transcript_text):
+    audio_file.seek(0)
     audio_bytes = audio_file.read()
     audio_buffer = io.BytesIO(audio_bytes)
 
@@ -132,14 +134,25 @@ def grade_code(code_snippet, problem_description):
     return output_text
 
 def grade_submission(audio_file, code_snippet, problem_description):
+    print("starting grading pipeline...")
     transcript = audio_to_transcript(audio_file)
-    audio_features = normalize_audio_features(extract_audio_features(audio_file, transcript))
+    print("transcript obtained.")
+    audio_grade = audio_features_to_grade(extract_audio_features(audio_file, transcript))
+    if type(audio_grade) != dict:
+        audio_grade = json.loads(audio_grade.replace("\n", "").replace("'", '"').replace("\\", ""))
+    print("audio features extracted.")
     transcript_grade = transcript_to_grade(transcript, problem_description)
+    if type(transcript_grade) != dict:
+        transcript_grade = json.loads(transcript_grade.replace("\n", "").replace("'", '"').replace("\\", ""))
+    print("transcript graded.")
     code_grade = grade_code(code_snippet, problem_description)
+    if type(code_grade) != dict:
+        code_grade = json.loads(code_grade.replace("\n", "").replace("'", '"').replace("\\", ""))
+    print("code graded.")
 
     final_evaluation = {
         "transcript": transcript,
-        "audio_features": audio_features,
+        "audio_grade": audio_grade,
         "transcript_grade": transcript_grade,
         "code_grade": code_grade
     }
@@ -148,19 +161,20 @@ def grade_submission(audio_file, code_snippet, problem_description):
 
 
 # HELPERS
-def normalize_audio_features(audio_features):
-    pitch_score = max(0, min(100, 100 - abs(150 - audio_features["pitch_mean"]) - audio_features["pitch_std"]))
-    energy_score = max(0, min(100, 100 - abs(0.1 - audio_features["energy_mean"] * 10) - audio_features["energy_std"] * 10))
+def audio_features_to_grade(audio_features):
+    pitch_score = max(0, min(100, 100 - abs(150 - audio_features["pitch_mean"])))
+    energy_score = max(0, min(100, 100 - abs(0.02 - audio_features["energy_mean"])*5000))
     confidence_score = (pitch_score + energy_score) / 2
 
     wpm_score = max(0, min(100, 100 - abs(130 - audio_features["wpm"])))
-    pause_score = max(0, min(100, 100 - audio_features["pause_rate"] * 100))
-    filler_score = max(0, min(100, 100 - audio_features["filler_count"] * 10))
+    pause_score = max(0, min(100, 100 - audio_features["pause_rate"]*5))
+    filler_score = max(0, min(100, 100 - audio_features["filler_count"]*5))
     clarity_score = (wpm_score + pause_score + filler_score) / 3
 
     return {
         "confidence_score": confidence_score,
-        "clarity_score": clarity_score
+        "clarity_score": clarity_score,
+        "speed": audio_features["wpm"]
     }
 
 
