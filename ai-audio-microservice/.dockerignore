@@ -1,0 +1,9 @@
+# flyctl launch added from .gitignore
+# Environment
+**\.venv
+**\.env
+
+# pycache
+**\__pycache__
+**\*.pyc
+fly.toml

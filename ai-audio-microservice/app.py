@@ -28,7 +28,7 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": CLIENT_URL, "allow_headers": ["Content-Type"]}})
+    CORS(app, resources={r"/*": {"origins": "*", "allow_headers": ["Content-Type"]}})
     
     # ROUTES
     @app.route('/', methods=['GET'])
