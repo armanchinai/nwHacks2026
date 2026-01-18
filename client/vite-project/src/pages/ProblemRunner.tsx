@@ -100,6 +100,12 @@ export default function ProblemRunnerPage() {
 
       if (msg.type === "result") {
         setStatus(msg.status);
+        if (msg.status.includes("passing")) {
+          // stop recording on success
+          if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+            mediaRecorderRef.current.stop();
+          }
+        }
         ws.close();
       }
     };

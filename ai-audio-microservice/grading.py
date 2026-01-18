@@ -61,9 +61,8 @@ def audio_to_transcript(audio_file):
 def extract_audio_features(audio_file, transcript_text):
     audio_file.seek(0)
     audio_bytes = audio_file.read()
-    audio_buffer = io.BytesIO(audio_bytes)
 
-    y, sr = librosa.load(audio_buffer, sr=16000)
+    y, sr = decode_webm_to_pcm(audio_bytes, target_sr=16000)
 
     # Speech Rate
     duration_seconds = librosa.get_duration(y=y, sr=sr)
@@ -176,6 +175,35 @@ def audio_features_to_grade(audio_features):
         "clarity_score": clarity_score,
         "speed": audio_features["wpm"]
     }
+
+def decode_webm_to_pcm(audio_bytes, target_sr=16000):
+    cmd = [
+        "ffmpeg",
+        "-i", "pipe:0",
+        "-f", "f32le",
+        "-acodec", "pcm_f32le",
+        "-ac", "1",
+        "-ar", str(target_sr),
+        "pipe:1"
+    ]
+
+    proc = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    pcm_bytes, stderr = proc.communicate(audio_bytes)
+
+    if proc.returncode != 0:
+        raise RuntimeError("FFmpeg decode failed:\n" + stderr.decode(errors="ignore"))
+
+    if len(pcm_bytes) == 0:
+        raise ValueError("Decoded audio is empty")
+
+    y = np.frombuffer(pcm_bytes, dtype=np.float32)
+    return y, target_sr
 
 
 # MAIN
