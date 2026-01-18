@@ -1,0 +1,4 @@
+app = "nwhacks-runner"
+
+[build]
+  dockerfile = "Dockerfile"
