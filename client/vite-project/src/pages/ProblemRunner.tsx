@@ -25,10 +25,13 @@ export default function ProblemRunnerPage() {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("java");
   const [status, setStatus] = useState<string | null>(null);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+
   const wsRef = useRef<WebSocket | null>(null);
 
   /* ------------------ LOAD PROBLEM ------------------ */
-
   useEffect(() => {
     // TEMP: inline mock instead of fetching
     setProblem(MOCK_PROBLEM);
@@ -36,14 +39,48 @@ export default function ProblemRunnerPage() {
     setLanguage(MOCK_PROBLEM.language);
   }, [problemId]);
 
-  /* ------------------ RUN CODE ------------------ */
+  useEffect(() => {
+    const startRecording = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = recorder;
 
+        recorder.ondataavailable = (e) => {
+          audioChunksRef.current.push(e.data);
+        };
+
+        recorder.onstop = () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+          audioChunksRef.current = [];
+          console.log("Recording done", audioBlob);
+        };
+
+        recorder.start();
+        console.log("Recording started automatically");
+      } catch (err) {
+        console.error("Microphone access denied or error:", err);
+        alert("Microphone access is required for recording.");
+      }
+    };
+
+    startRecording();
+
+    return () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
+
+
+  /* ------------------ RUN CODE ------------------ */
   async function runCode() {
     if (!problemId) problemId = "java-two-sum" ;
 
     setStatus("Running test cases...");
 
-    const res = await fetch(`http://localhost:3000/run/${problemId}`, {
+    const res = await fetch(`https://problems.fly.dev/run/${problemId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ language, code })
@@ -51,7 +88,7 @@ export default function ProblemRunnerPage() {
 
     const { job_id } = await res.json();
 
-    const ws = new WebSocket(`ws://localhost:3000?job_id=${job_id}`);
+    const ws = new WebSocket(`wss://problems.fly.dev?job_id=${job_id}`);
     wsRef.current = ws;
 
     ws.onmessage = ev => {
