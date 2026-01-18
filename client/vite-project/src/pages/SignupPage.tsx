@@ -105,7 +105,7 @@ const SignupPage = () => {
                   <button
                     type="button"
                     className="w-full py-6 md:py-7 border-2 border-slate-800 hover:border-slate-700 bg-slate-900/50 text-white font-bold rounded-3xl text-lg md:text-xl flex items-center justify-center gap-4 transition-all hover:bg-slate-800 active:scale-[0.98]"
-                  >
+                    >
                     <svg className="w-6 h-6" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"
