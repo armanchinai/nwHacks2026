@@ -5,5 +5,7 @@ gunicorn
 torch
 transformers
 pydub
+accelerate
+openai==1.0.0
 # pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 # winget install ffmpeg
