@@ -83,29 +83,22 @@ app.post("/register", checkNotAuthenticated, async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const name = req.body.name;
     const email = req.body.email;
-    
-    db.run(
-      "INSERT INTO users (id, hashed_password, name, email) VALUES (?, ?, ?, ?)",
-      [id, hashedPassword, name, email],
-      (err) => {
-        if (err) {
-          console.log(err);
-          return res.redirect("/register");
-        }
-        res.redirect("/login");
+
+    db.run("INSERT INTO users (id, hashed_password, name, email) VALUES (?, ?, ?, ?)", [id, hashedPassword, name, email], (err) => {
+      if (err) {
+        // tell user that the email is already registered
+        req.flash("error", "That email is already registered");
+        return res.redirect("/register");
       }
-    );
+      res.redirect("/login");
+    });
   } catch (e) {
     console.log(e);
     res.redirect("/register");
   }
 });
 
-app.get(
-  "/register/google",
-  checkNotAuthenticated,
-  passport.authenticate("google", { scope: ["profile"] })
-);
+app.get("/register/google", checkNotAuthenticated, passport.authenticate("google", { scope: ["profile"] }));
 
 app.get(
   "/oauth2/redirect/google",

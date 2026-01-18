@@ -26,6 +26,7 @@ Most platforms only check your syntax. **SpeakCode checks your voice.**
 ## Tech Stack
 
 - **Frontend:** React 19, Vite, Tailwind CSS
+- **Backend:** Node.js, JavaScript, Python, Docker, Passport js
 
 ## Getting Started
 
