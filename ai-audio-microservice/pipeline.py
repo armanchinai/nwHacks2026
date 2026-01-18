@@ -113,6 +113,24 @@ def extract_audio_features(audio_file, transcript_text):
         "filler_count": filler_count
     }
 
+def grade_code(code_snippet, problem_description):
+    prompt_template = PROMPTS.get("code-to-grade", "")
+    prompt = prompt_template.replace("{code_snippet}", code_snippet).replace("{problem_description}", problem_description)
+
+    payload = {
+        "model": "gpt-4.1",
+        "input": prompt
+    }
+
+    response = requests.post(
+        "https://api.openai.com/v1/responses",
+        json=payload,
+        headers=headers
+    )
+
+    output_text = response.json()["output"][0]["content"][0]["text"]
+    return output_text
+
 
 # MAIN
 if __name__ == "__main__":
