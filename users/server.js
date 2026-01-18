@@ -18,8 +18,6 @@ const initializePassportGoogle = require("./passport-google-config");
 app.set("view-engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 app.use(flash());
-app.use(passport.initialize());
-app.use(methodOverride("_method"));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -28,24 +26,34 @@ app.use(
     store: new SQLiteStore({ db: "sessions.db", dir: "./var/db" }),
   }),
 );
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(methodOverride("_method"));
 
-intializePassport(
-  passport,
-  (email) => {
-    if (sql.run(`SELECT ${email} FROM users`) == email) {
-      return true;
-    }
-    // return users.find((user) => user.email === email);
-  },
-  (id) => {
-    if (sql.run(`SELECT ${id} FROM users`) == id) {
-      return true;
-    }
-    // users.find((user) => user.id === id),
-  }
-);
+// Wrapper functions for database queries
+const getUserByEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT * FROM users WHERE email = ?", [email], (err, row) => {
+      if (err) reject(err);
+      resolve(row);
+    });
+  });
+};
 
+const getUserById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.get("SELECT * FROM users WHERE id = ?", [id], (err, row) => {
+      if (err) reject(err);
+      resolve(row);
+    });
+  });
+};
+
+intializePassport(passport, getUserByEmail, getUserById);
 initializePassportGoogle();
+
+// Change this to redirect to your desired page after login
+const REDIRECT_AFTER_LOGIN = "/?wasredirected"; // or wherever you want users to go
 
 app.get("/", checkAuthenticated, (req, res) => {
   res.render("index.ejs", { name: req.user.name });
@@ -59,7 +67,7 @@ app.post(
   "/login",
   checkNotAuthenticated,
   passport.authenticate("local", {
-    successRedirect: "/",
+    successRedirect: REDIRECT_AFTER_LOGIN,
     failureRedirect: "/login",
     failureFlash: true,
   }),
@@ -71,27 +79,39 @@ app.get("/register", checkNotAuthenticated, (req, res) => {
 
 app.post("/register", checkNotAuthenticated, async (req, res) => {
   try {
-    let id = Date.now.toString();
+    const id = Date.now().toString();
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    let name = req.body.name;
-    let email = req.body.email;
-    // db.serialize(() => {
-    //   db.run(`INSERT INTO users (id, hashed_password, salt, name, email) VALUES (${id}, ${hashedPassword}, 10, ${name}, ${email}) \\`);
-    // });
-    res.redirect("/login");
+    const name = req.body.name;
+    const email = req.body.email;
+    
+    db.run(
+      "INSERT INTO users (id, hashed_password, name, email) VALUES (?, ?, ?, ?)",
+      [id, hashedPassword, name, email],
+      (err) => {
+        if (err) {
+          console.log(err);
+          return res.redirect("/register");
+        }
+        res.redirect("/login");
+      }
+    );
   } catch (e) {
     console.log(e);
     res.redirect("/register");
   }
 });
 
-app.get("/register/google", checkNotAuthenticated, passport.authenticate("google"));
+app.get(
+  "/register/google",
+  checkNotAuthenticated,
+  passport.authenticate("google", { scope: ["profile"] })
+);
 
 app.get(
   "/oauth2/redirect/google",
   passport.authenticate("google", {
-    successRedirect: "/",
-    failureRedirect: "/login"
+    successRedirect: REDIRECT_AFTER_LOGIN,
+    failureRedirect: "/login",
   }),
 );
 
@@ -104,12 +124,11 @@ app.delete("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-// middleware function
+// Middleware functions
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-
   res.redirect("/login");
 }
 
@@ -120,4 +139,4 @@ function checkNotAuthenticated(req, res, next) {
   next();
 }
 
-app.listen(3000);
+app.listen(4000);
