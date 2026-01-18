@@ -1,0 +1,88 @@
+{
+    "id": "17810d42b274d8",
+    "name": "test-runner-1",
+    "state": "destroyed",
+    "region": "ord",
+    "instance_id": "01KF7B9YS7YAD9S8H5P5KNNYTZ",
+    "private_ip": "",
+    "config": {
+        "env": {
+            "USER_CODE_B64": "cHJvY2Vzcy5leGl0KDUp"
+        },
+        "init": {},
+        "guest": {
+            "cpu_kind": "shared",
+            "cpus": 1,
+            "memory_mb": 256
+        },
+        "image": "registry.fly.io/nwhacks-runner:latest",
+        "auto_destroy": true,
+        "restart": {
+            "policy": "no"
+        }
+    },
+    "incomplete_config": null,
+    "image_ref": {
+        "registry": "registry.fly.io",
+        "repository": "nwhacks-runner",
+        "tag": "latest",
+        "digest": "sha256:735d0cc8a2ad8641045d216425c77aba89648782a3d21a6af64c2db94f1b896a",
+        "labels": null
+    },
+    "created_at": "2026-01-18T01:25:25Z",
+    "updated_at": "2026-01-18T01:25:30Z",
+    "events": [
+        {
+            "id": "01KF7BA2XB4J1YB1CNGTSTEBNS",
+            "type": "destroy",
+            "status": "destroyed",
+            "source": "flyd",
+            "timestamp": 1768699530155
+        },
+        {
+            "id": "01KF7BA2DS18TT2HBJ8BSDKWB4",
+            "type": "destroy",
+            "status": "destroying",
+            "source": "flyd",
+            "timestamp": 1768699529657
+        },
+        {
+            "id": "01KF7BA2AYRH5076WJSV5W58CN",
+            "type": "exit",
+            "status": "stopped",
+            "request": {
+                "exit_event": {
+                    "requested_stop": false,
+                    "restarting": false,
+                    "guest_exit_code": 0,
+                    "guest_signal": -1,
+                    "guest_error": "",
+                    "exit_code": 5,
+                    "signal": -1,
+                    "error": "",
+                    "oom_killed": false,
+                    "exited_at": "2026-01-18T01:25:29.461Z"
+                },
+                "restart_count": 0
+            },
+            "source": "flyd",
+            "timestamp": 1768699529566
+        },
+        {
+            "id": "01KF7BA133H4YS933M8G71SE8D",
+            "type": "start",
+            "status": "started",
+            "request": {},
+            "source": "flyd",
+            "timestamp": 1768699528291
+        },
+        {
+            "id": "01KF7B9YWJWQB53FKC45QX3B10",
+            "type": "launch",
+            "status": "created",
+            "source": "user",
+            "timestamp": 1768699526034
+        }
+    ],
+    "host_status": "ok"
+}

@@ -1,0 +1,9 @@
+Flask
+Flask-Cors
+python-dotenv
+gunicorn
+pydub
+openai==1.0.0
+librosa
+praat-parselmouth
+numpy
