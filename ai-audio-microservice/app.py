@@ -8,9 +8,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
-from transformers import WhisperProcessor, WhisperForConditionalGeneration
-
-from pipeline import audio_to_text
+from pipeline import audio_to_text, transcript_to_grade
 
 
 # CONSTANTS
@@ -18,7 +16,7 @@ load_dotenv()
 CLIENT_URL = os.getenv('CLIENT_URL')
 
 
-# Initialize Flask app
+# INIT FLASK APP
 app = Flask(__name__)
 CORS(app)
 
@@ -31,9 +29,6 @@ def create_app():
 
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": CLIENT_URL, "allow_headers": ["Content-Type"]}})
-
-    processor = WhisperProcessor.from_pretrained("openai/whisper-small")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small").to("cuda")
     
     # ROUTES
     @app.route('/', methods=['GET'])
@@ -54,14 +49,14 @@ def create_app():
             return jsonify({"error": "No file part in the request"}), 400
         audio_file = request.files['file']
 
-        userid = request.form.get("userid")
-        prompt = request.form.get("prompt")
-        if not userid or not prompt:
-            return {"error": "Missing userid or prompt"}, 400
+        problem_description = request.form.get("problem_description")
+        if not problem_description:
+            return {"error": "Missing problem_description"}, 400
         
-        audio_to_text(audio_file, processor, model)
+        transcript = audio_to_text(audio_file)
+        # response = transcript_to_grade(transcript, problem_description)
 
-        return jsonify({"message": "Audio processed successfully"}), 200
+        return jsonify({"message": transcript}), 200
         
         
         
