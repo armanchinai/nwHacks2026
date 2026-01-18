@@ -1,44 +1,85 @@
 # SpeakCode | nwHacks 2026
 
-> **"Coding is only half the battle."**
+### **"Coding is only half the battle."**
 
-Applicants are expected to solve complex problems and explain their solutions—all while coding under a low-time, high-pressure environment. **SpeakCode** helps developers practice technical interviews by evaluating both how they code and how they communicate.
+In top-tier technical interviews, a passing test suite isn't enough. Engineers are expected to articulate complex logic, justify trade-offs, and maintain composure—all while the clock is ticking. **SpeakCode** is a multimodal practice platform that evaluates not just the code you write, but the way you explain it.
 
 ---
 
-## The Problem
+## The Challenge
 
-Technical interviews are no longer just about getting the green checkmark on LeetCode. Top-tier companies look for:
+Modern technical screenings have a "Communication Gap." Platforms like LeetCode focus entirely on syntax and Big O, ignoring the **verbal reasoning** that actually gets you the job. Companies look for:
 
-- **Verbal Reasoning:** Can you explain _why_ you chose a Hashmap over an Array?
-- **Communication Clarity:** Can you articulate complex logic while typing?
-- **Confidence under Pressure:** How do you handle the ticking clock?
+- **Logic Articulation:** The ability to explain _why_ a Hashmap was chosen over a TreeMap.
+- **Technical Clarity:** Explaining data structures clearly without losing focus on the implementation.
+- **Acoustic Confidence:** Managing pacing, tone, and filler words under high-stress conditions.
 
-Most platforms only check your syntax. **SpeakCode checks your voice.**
+---
 
-## Features
+## How it Works
 
-- **Voice-First Evaluation:** Uses AI to listen to your verbal reasoning in real-time.
-- **Clarity & Confidence Scoring:** Get deep feedback on your pacing, tone, and technical correctness.
-- **High-Pressure Simulation:** A sleek, minimal IDE designed to mimic the stress of a real-world technical screening.
-- **Integrated IDE:** Solve data structures and algorithm problems with a built-in code editor.
+SpeakCode uses a specialized AI pipeline to analyze your performance across two dimensions simultaneously:
 
-## Tech Stack
+### 1. The Content
 
-- **Frontend:** React 19, Vite, Tailwind CSS
-- **Backend:** Node.js, JavaScript, Python, Docker, Passport js
+- **Whisper Large-v3:** Transcribes your verbal reasoning with high fidelity, even with heavy technical jargon.
+- **GPT-4 Intelligence:** Acts as a "Critical Interviewer" to grade your logic, algorithmic accuracy, and code efficiency against FAANG standards.
+
+### 2. The Delivery
+
+- **Signal Processing:** We use `librosa` and `parselmouth` to extract acoustic features like pitch variance (confidence), speech rate (pacing), and filler word density (clarity).
+
+---
+
+## Core Features
+
+- **Live Pressure Simulation:** A minimal, high-stakes IDE designed to mimic real-world technical screenings.
+- **Multimodal Feedback:** Get a holistic dashboard showing your **Communication Score** alongside your **Code Correctness**.
+- **Logic vs. Syntax Analysis:** Our AI distinguishes between a "syntax error" and a "logic gap," giving you specific feedback on where your explanation failed.
+- **Acoustic Metrics:** Visualize your speech patterns to identify where you sound hesitant or rushed.
+
+---
+
+## Technical Architecture
+
+| Layer                 | Technologies                                      |
+| --------------------- | ------------------------------------------------- |
+| **Frontend**          | React 19, Vite, Tailwind CSS, Monaco Editor       |
+| **Backend**           | Python (Flask), Node.js, WebSockets               |
+| **AI/ML**             | OpenAI GPT-4, Whisper-1 (Speech-to-Text)          |
+| **Signal Processing** | Librosa, Parselmouth (Praat-based pitch analysis) |
+| **Infrastructure**    | Docker, Fly.io (Machine-based code execution)     |
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm or yarn
+- Node.js (v18+)
+- Python 3.10+
+- FFmpeg (for audio processing)
 
 ### Installation
 
-**Clone the repository:**
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/armanchinai/nwHacks2026.git
+cd nwHacks2026
 
 ```
-git clone [https://github.com/armanchinai/nwHacks2026.git](https://github.com/armanchinai/nwHacks2026.git)
+
+2. **Install Dependencies:**
+
+```bash
+# Frontend
+npm install
+
+# Backend
+pip install -r requirements.txt
+
 ```
+
+3. **Environment Setup:**
+   Create a `.env` file and add your `OPENAI_API_KEY` and `FLY_API_TOKEN`.
