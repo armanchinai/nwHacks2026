@@ -132,7 +132,36 @@ def grade_code(code_snippet, problem_description):
     return output_text
 
 def grade_submission(audio_file, code_snippet, problem_description):
-    pass
+    transcript = audio_to_transcript(audio_file)
+    audio_features = normalize_audio_features(extract_audio_features(audio_file, transcript))
+    transcript_grade = transcript_to_grade(transcript, problem_description)
+    code_grade = grade_code(code_snippet, problem_description)
+
+    final_evaluation = {
+        "transcript": transcript,
+        "audio_features": audio_features,
+        "transcript_grade": transcript_grade,
+        "code_grade": code_grade
+    }
+
+    return final_evaluation
+
+
+# HELPERS
+def normalize_audio_features(audio_features):
+    pitch_score = max(0, min(100, 100 - abs(150 - audio_features["pitch_mean"]) - audio_features["pitch_std"]))
+    energy_score = max(0, min(100, 100 - abs(0.1 - audio_features["energy_mean"] * 10) - audio_features["energy_std"] * 10))
+    confidence_score = (pitch_score + energy_score) / 2
+
+    wpm_score = max(0, min(100, 100 - abs(130 - audio_features["wpm"])))
+    pause_score = max(0, min(100, 100 - audio_features["pause_rate"] * 100))
+    filler_score = max(0, min(100, 100 - audio_features["filler_count"] * 10))
+    clarity_score = (wpm_score + pause_score + filler_score) / 3
+
+    return {
+        "confidence_score": confidence_score,
+        "clarity_score": clarity_score
+    }
 
 
 # MAIN

@@ -8,7 +8,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
-from pipeline import grade_submission
+from grading import grade_submission
 
 
 # CONSTANTS
@@ -58,9 +58,6 @@ def create_app():
         
         response = grade_submission(audio_file, code_snippet, problem_description)
         return jsonify({"message": response}), 200
-        
-        
-        
 
     
     # RESPONSE HEADERS
@@ -74,7 +71,5 @@ def create_app():
         if request.method == 'OPTIONS':
             response.status_code = 200
         return response
-            
-    # REGISTER BLUEPRINTS
 
     return app
