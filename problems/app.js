@@ -15,7 +15,8 @@ const JOB_TIMEOUT_MS = 60_000;
 const FLY_APP = "nwhacks-runner";
 const FLY_API = "https://api.machines.dev/v1";
 const FLY_TOKEN = process.env.FLY_API_TOKEN;
-const MACHINE_IMAGE = "registry.fly.io/nwhacks-runner:python-two-sum";
+const MACHINE_IMAGE_BASE = "registry.fly.io/nwhacks-runner:";
+
 
 /* ------------------ APP SETUP ------------------ */
 
@@ -77,13 +78,18 @@ async function flyFetch(path, options = {}) {
 
     return res.json();
 }
-
-async function createFlyMachine(env) {
+/**
+ * look at me adding jsdocs, maybe ill do all of them who knows
+ * @param {*} env # environement variables on machine
+ * @param {string} image_version #should name the specific test runner wanted 
+ * @returns 
+ */
+async function createFlyMachine(env, image_version) {
     const body = {
         name: `job-${uuidv4()}`,
         region: "ord",
         config: {
-            image: MACHINE_IMAGE,
+            image: MACHINE_IMAGE_BASE+image_version,
             env,
             restart: { policy: "no" },
             auto_destroy: true,
