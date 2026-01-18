@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Security: non-root user
+# Security: whole environment is a sandbox, so not needed
 # RUN useradd -m runner
 # USER runner
 
