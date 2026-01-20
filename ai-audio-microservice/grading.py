@@ -28,7 +28,7 @@ def transcript_to_grade(transcript, problem_description):
     prompt = prompt_template.replace("{transcript}", transcript).replace("{problem_description}", problem_description)
 
     payload = {
-        "model": "gpt-4.1",
+        "model": "gpt-5-nano",
         "input": prompt
     }
 
@@ -38,7 +38,7 @@ def transcript_to_grade(transcript, problem_description):
         headers=headers
     )
 
-    output_text = response.json()["output"][0]["content"][0]["text"]
+    output_text = response.json()["output"][1]["content"][0]["text"]
     return output_text
 
 def audio_to_transcript(audio_file):
@@ -119,7 +119,7 @@ def grade_code(code_snippet, problem_description):
     prompt = prompt_template.replace("{code_snippet}", code_snippet).replace("{problem_description}", problem_description)
 
     payload = {
-        "model": "gpt-4.1",
+        "model": "gpt-5-nano",
         "input": prompt
     }
 
@@ -129,7 +129,7 @@ def grade_code(code_snippet, problem_description):
         headers=headers
     )
 
-    output_text = response.json()["output"][0]["content"][0]["text"]
+    output_text = response.json()["output"][1]["content"][0]["text"]
     return output_text
 
 def grade_submission(audio_file, code_snippet, problem_description):
