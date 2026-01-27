@@ -81,7 +81,7 @@ const LandingPage = () => {
                 </svg>
               </Link>
               <Link
-                to="/practice"
+                to="/practice?problemId=java-two-sum"
                 className="px-10 py-5 md:px-14 md:py-6 border-2 border-slate-800 text-white font-black rounded-2xl text-lg md:text-2xl flex items-center justify-center hover:bg-slate-900 transition-all"
               >
                 VIEW DEMO
